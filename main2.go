@@ -33,18 +33,13 @@ func initDB() {
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	var users []model.User
 	db.Find(&users)
-	json.NewEncoder(w).Encode(users) // в json
+	json.NewEncoder(w).Encode(users)
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
 	var user model.User
-	if err := json.NewDecoder(r.Body).Decode(&user); // в go struct
-		err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	json.NewDecoder(r.Body).Decode(&user)
 	db.Create(&user)
-	json.NewEncoder(w).Encode(user)
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +76,4 @@ func main() {
 	r.HandleFunc("/user", createUser).Methods("POST")
 	r.HandleFunc("/user/{id}", updateUser).Methods("PUT")
 	r.HandleFunc("/user/{id}", deleteUser).Methods("DELETE")
-
-	fmt.Println("Server started at :8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
 }
